@@ -54,6 +54,31 @@ class runningdata(db.Model):
         if "_sa_instance_state" in dict:
             del dict["_sa_instance_state"]
         return dict
+
+class usertrack(db.Model):
+    __tablename__='usertrack'
+    user=db.Column(db.Integer,nullable=False)
+    starttime=db.Column(db.String(255),nullable=False)
+    endtime=db.Column(db.String(255),nullable=False)
+    cal=db.Column(db.Float,nullable=True)
+    distance=db.Column(db.Float,nullable=True)
+    tag=db.Column(db.Integer,nullable=Float,primary_key=True)
+    def to_json(self):
+        dict = self.__dict__
+        if "_sa_instance_state" in dict:
+            del dict["_sa_instance_state"]
+        return dict
+
+class fankuidata(db.Model):
+    __tablename__='fankui'
+    id=db.Column(db.Integer,nullable=False,primary_key=True)
+    concent=db.Column(db.String(255),nullable=True)
+    def to_json(self):
+        dict = self.__dict__
+        if "_sa_instance_state" in dict:
+            del dict["_sa_instance_state"]
+        return dict
+
 db.create_all()
 
 class Du:
@@ -126,15 +151,26 @@ def form():
 
 @app.route('/design',methods=['GET','POST'])
 def design():
-    tempdesigntag=maxtag
+
     conn = pymysql.connect(host='127.0.0.1', user='root', password='zys9970304', db='running', charset='utf8')
     cur = conn.cursor()
-    sql = "select  * from runningdata "
+    sql = "select  * from usertrack "
     cur.execute(sql)
     u = cur.fetchall()
     conn.close()
     print(u)
     return render_template('design.html',u=u)
+
+@app.route('/fankui',methods=['GET','POST'])
+def fankui():
+    conn = pymysql.connect(host='127.0.0.1', user='root', password='zys9970304', db='running', charset='utf8')
+    cur = conn.cursor()
+    sql = "select  * from fankui "
+    cur.execute(sql)
+    u = cur.fetchall()
+    conn.close()
+    print(u)
+    return render_template('fankui.html', u=u)
 
 @app.route('/move',methods=['GET','POST'])
 def move():
@@ -149,21 +185,47 @@ def findmaxtag():
     conn.close()
     return u
 
+@app.route('/insert',methods=['GET','POST'])
+def insert():
+    content = request.form.get("content")
+    print(content)
+    insertfankui=fankuidata(concent=content)
+    db.session.add(insertfankui)
+    db.session.commit()
+    return render_template("insert.html")
+
+@app.route('/deleteget',methods=['GET',"POST"])
+@login_required
+def deleteget():
+    deleteid=request.form.get("id")
+    fankuidelete = fankuidata.query.get(deleteid)
+    db.session.delete(fankuidelete)
+    db.session.commit()
+    return "ok"
+
 tem=findmaxtag()
 global maxtag
 maxtag=tem[0][0]
 print(maxtag)
-@app.route('/getmaxtag',methods=['GET','POST'])
+@app.route('/getdata',methods=['GET','POST'])
 def getmaxtag():
     u=findmaxtag()
     end=request.form.get('end')
-    print(end)
-    print(type(end))
+    distance=request.form.get("distance")
+    starttime=request.form.get("starttime")
+    endtime=request.form.get("endtime")
+    oncetime=request.form.get("time")
+    print(oncetime)
+    print(endtime)
+    cal=float(distance)*68*1.036
     if end=='1':
         global maxtag
         temp=maxtag
         temp=temp+1
         maxtag=temp
+        insertusertrack = usertrack(user=8888, starttime=starttime, endtime=endtime, cal=cal,distance=distance,tag=maxtag)
+        db.session.add(insertusertrack)
+        db.session.commit()
     return "ok"
 @app.route('/',methods=['GET','POST'])
 def test():
@@ -171,12 +233,10 @@ def test():
     userid=50
     la = request.form.get('la')
     long=request.form.get('long')
-    print(la)
-    print(long)
-    print(maxtag)
-    insertdata = runningdata(id=id,la=la,long=long,tag=maxtag)
-    db.session.add(insertdata)
-    db.session.commit()
+    if(la!="undefined"):
+        insertdata = runningdata(id=id,la=la,long=long,tag=maxtag)
+        db.session.add(insertdata)
+        db.session.commit()
     return "ok"
 app.secret_key = '1234567'
 if __name__ == '__main__':

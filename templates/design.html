@@ -36,11 +36,8 @@
                 <li>
                     <a href="#"><i class="icon-font">&#xe003;</i>常用操作</a>
                     <ul class="sub-menu">
-                        <li><a href="design"><i class="icon-font">&#xe008;</i>作品管理</a></li>
-                        <li><a href="design"><i class="icon-font">&#xe005;</i>博文管理</a></li>
-                        <li><a href="videotest"><i class="icon-font">&#xe006;</i>视频管理</a></li>
-                        <li><a href="design"><i class="icon-font">&#xe004;</i>留言管理</a></li>
-                        <li><a href="design"><i class="icon-font">&#xe012;</i>评论管理</a></li>
+                        <li><a href="design"><i class="icon-font">&#xe008;</i>用户轨迹</a></li>
+                        <li><a href="fankui"><i class="icon-font">&#xe004;</i>留言管理</a></li>
                         <li><a href="design"><i class="icon-font">&#xe052;</i>友情链接</a></li>
                         <li><a href="design"><i class="icon-font">&#xe033;</i>广告管理</a></li>
                     </ul>
@@ -73,9 +70,10 @@
                             <th class="tc" width="5%"><input class="allChoose" name="" type="checkbox"></th>
 
                             <th>用户</th>
-                            <th>起点</th>
-                            <th>终点</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
                             <th>消耗卡路里</th>
+                            <th>距离</th>
                             <th>轨迹id</th>
 
                         </tr>
@@ -87,11 +85,13 @@
                             <td>{{ i[2] }}</td>
                             <td>{{ i[3] }}</td>
                             <td>{{ i[4] }}</td>
+                            <td>{{ i[5] }}</td>
+
                             <td>
                                 <a href="/move"><input type="button" value="查看"></a>
                             </td>
                         </tr>
-                        {% endfor %}
+                         {% endfor %}
                     </table>
                     <div class="list-page"> 2 条 1/1 页</div>
                 </div>
